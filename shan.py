@@ -5,11 +5,10 @@ import time
 import random
 import asyncio
 from threading import Thread
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 loop = asyncio.get_event_loop()
 
-TOKEN = '7939255556:AAHxcg7jPT_RGEPpDQknmqwdAmZq-6j6wPA'
+TOKEN = '7672123405:AAHeiE6hZPaYDGtLeVGONzp_j_D6WWTW3vQ'
 bot = telebot.TeleBot(TOKEN)
 REQUEST_INTERVAL = 1
 blocked_ports = [8700, 20000, 443, 17500, 9031, 20002, 20001]  # Blocked ports list
@@ -51,8 +50,8 @@ def update_proxy():
     telebot.apihelper.proxy = {'https': proxy}
     logging.info("Proxy updated successfully.")
 
-@bot.message_handler(commands=['Attack'])
-def process_attack_command(message):
+@bot.message_handler(func=lambda message: True)
+def handle_attack_command(message):
     try:
         args = message.text.split()
         if len(args) != 3:
@@ -71,20 +70,6 @@ def process_attack_command(message):
 
     except Exception as e:
         logging.error(f"Error in processing attack command: {e}")
-
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    markup = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
-    btn_attack = KeyboardButton("Attack")
-    markup.add(btn_attack)
-    bot.send_message(message.chat.id, "*Welcome to the bot! Use the Attack command to initiate an attack.*", reply_markup=markup, parse_mode='Markdown')
-
-@bot.message_handler(func=lambda message: True)
-def handle_message(message):
-    if message.text == "Attack":
-        bot.reply_to(message, "*Please use the command format: /Attack target_ip target_port duration*", parse_mode='Markdown')
-    else:
-        bot.reply_to(message, "*Invalid option. Please use the Attack command.*", parse_mode='Markdown')
 
 if __name__ == "__main__":
     asyncio_thread = Thread(target=start_asyncio_thread, daemon=True)
